@@ -8,10 +8,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://login.microsoftonline.com/49cd374a-62d5-4d3d-851e-69058d58e3b5/v2.0
-          audiences:
-            - api://2c70c5bc-6b56-4564-bca4-ec0821f3cefa
-            - 2c70c5bc-6b56-4564-bca4-ec0821f3cefa
+          jwk-set-uri: https://login.microsoftonline.com/49cd374a-62d5-4d3d-851e-69058d58e3b5/discovery/v2.0/keys
 
 services:
   appointments-url: ${APPOINTMENTS_URL:http://localhost:8081}
@@ -19,3 +16,7 @@ services:
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+
+logging:
+  level:
+    org.springframework.security: INFO
