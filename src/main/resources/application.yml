@@ -15,7 +15,7 @@ services:
   catalog-url: ${CATALOG_URL:http://localhost:8082}
 
 cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://localhost:4201}
 
 logging:
   level:
