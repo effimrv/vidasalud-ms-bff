@@ -1,7 +1,6 @@
 package com.vidasalud.bff.security;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ public class IdentidadUsuario {
 
     public boolean esPersonal(Authentication autenticacion) {
         return autenticacion.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(autoridad -> autoridad.getAuthority())
                 .anyMatch(ROLES_PERSONAL::contains);
     }
 

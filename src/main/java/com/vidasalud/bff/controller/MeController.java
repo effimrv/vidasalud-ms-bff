@@ -2,7 +2,6 @@ package com.vidasalud.bff.controller;
 
 import com.vidasalud.bff.security.IdentidadUsuario;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +34,7 @@ public class MeController {
         String usuario = primeroNoVacio(identidad.correo(autenticacion), jwt.getSubject());
         String nombre = primeroNoVacio(jwt.getClaimAsString("name"), usuario);
         List<String> roles = autenticacion.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(autoridad -> autoridad.getAuthority())
                 .filter(autoridad -> autoridad.startsWith(PREFIJO_ROL))
                 .map(autoridad -> autoridad.substring(PREFIJO_ROL.length()))
                 .toList();
