@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Proxy hacia ms-appointments. Un paciente solo ve y crea sus propias atenciones: el BFF fija el pacienteId
- * a partir de su token, sin importar lo que envíe el frontend. Admin y Recepcionista ven todas.
+ * Proxy hacia ms-appointments. Un paciente solo ve y crea sus propias atenciones: el BFF fija el pacienteId y el
+ * nombre del paciente a partir de su token, sin importar lo que envíe el frontend. Admin y Recepcionista ven todas.
  */
 @RestController
 @RequestMapping("/api/appointments")
@@ -66,6 +66,7 @@ public class AppointmentsController {
         if (!identidad.esPersonal(autenticacion)) {
             ObjectNode cita = (ObjectNode) objectMapper.readTree(cuerpo);
             cita.put(PARAM_PACIENTE, identidad.idPaciente(autenticacion));
+            cita.put("pacienteNombre", identidad.nombreCompleto(autenticacion));
             cuerpo = objectMapper.writeValueAsString(cita);
         }
         return client.post().uri("/api/appointments")

@@ -1,6 +1,7 @@
 package com.vidasalud.bff.controller;
 
 import com.vidasalud.bff.config.SecurityConfig;
+import com.vidasalud.bff.security.IdentidadUsuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /** Verifica el rol por defecto de las cuentas recién registradas y la respuesta de /api/me con claims incompletos. */
 @WebMvcTest(MeController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, IdentidadUsuario.class})
 class MeControllerTest {
 
     @Autowired
@@ -39,6 +40,17 @@ class MeControllerTest {
                 .andExpect(jsonPath("$.roles[0]").value("Paciente"))
                 .andExpect(jsonPath("$.usuario").value("ana@gmail.com"))
                 .andExpect(jsonPath("$.nombre").value("ana@gmail.com"));
+    }
+
+    @Test
+    void separaElNombreParaMostrarDelNombreCompleto() throws Exception {
+        token("cely", Jwt.withTokenValue("cely").header("alg", "none").subject("abc")
+                .claim("name", "Cely").claim("given_name", "Aracely").claim("family_name", "Escobar").build());
+
+        mvc.perform(get("/api/me").header("Authorization", "Bearer cely"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Cely"))
+                .andExpect(jsonPath("$.nombreCompleto").value("Aracely Escobar"));
     }
 
     @Test

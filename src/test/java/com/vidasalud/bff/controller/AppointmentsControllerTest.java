@@ -62,7 +62,8 @@ class AppointmentsControllerTest {
     void preparar() {
         ClienteFalso.servidor.reset();
         when(jwtDecoder.decode("paciente")).thenReturn(Jwt.withTokenValue("paciente").header("alg", "none")
-                .subject("sub-ana").claim("oid", "oid-ana").build());
+                .subject("sub-ana").claim("oid", "oid-ana").claim("name", "Anita")
+                .claim("given_name", "Ana").claim("family_name", "Pérez").build());
         when(jwtDecoder.decode("recepcion")).thenReturn(Jwt.withTokenValue("recepcion").header("alg", "none")
                 .subject("sub-rec").claim("oid", "oid-rec").claim("roles", List.of("Recepcionista")).build());
     }
@@ -92,11 +93,12 @@ class AppointmentsControllerTest {
         ClienteFalso.servidor.expect(requestTo(BASE + "/api/appointments"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.pacienteId").value("oid-ana"))
+                .andExpect(jsonPath("$.pacienteNombre").value("Ana Pérez"))
                 .andRespond(withSuccess("{\"id\":1}", MediaType.APPLICATION_JSON));
 
         mvc.perform(post("/api/appointments").header("Authorization", "Bearer paciente")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"pacienteNombre\":\"Ana\",\"servicioId\":1,\"pacienteId\":\"oid-de-otro\"}"))
+                        .content("{\"pacienteNombre\":\"Otro Nombre\",\"servicioId\":1,\"pacienteId\":\"oid-de-otro\"}"))
                 .andExpect(status().isOk());
         ClienteFalso.servidor.verify();
     }

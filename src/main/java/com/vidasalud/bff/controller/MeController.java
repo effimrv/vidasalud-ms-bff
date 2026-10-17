@@ -1,5 +1,6 @@
 package com.vidasalud.bff.controller;
 
+import com.vidasalud.bff.security.IdentidadUsuario;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,8 +18,15 @@ public class MeController {
 
     private static final String PREFIJO_ROL = "ROLE_";
 
+    private final IdentidadUsuario identidad;
+
+    public MeController(IdentidadUsuario identidad) {
+        this.identidad = identidad;
+    }
+
     /**
-     * Datos del usuario autenticado. Los roles son los efectivos (incluye Paciente por defecto para cuentas
+     * Datos del usuario autenticado. nombre es el nombre para mostrar (saludo); nombreCompleto, nombre y apellido
+     * (ficha clínica). Los roles son los efectivos (incluye Paciente por defecto para cuentas
      * recién registradas). Los usuarios externos no siempre traen todos los claims, por eso se usan alternativas.
      */
     @GetMapping
@@ -35,6 +43,7 @@ public class MeController {
 
         Map<String, Object> respuesta = new LinkedHashMap<>();
         respuesta.put("nombre", nombre);
+        respuesta.put("nombreCompleto", identidad.nombreCompleto(autenticacion));
         respuesta.put("usuario", usuario);
         respuesta.put("roles", roles);
         return respuesta;
