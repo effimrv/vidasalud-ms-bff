@@ -63,9 +63,10 @@ class AppointmentsControllerTest {
         ClienteFalso.servidor.reset();
         when(jwtDecoder.decode("paciente")).thenReturn(Jwt.withTokenValue("paciente").header("alg", "none")
                 .subject("sub-ana").claim("oid", "oid-ana").claim("name", "Anita")
-                .claim("given_name", "Ana").claim("family_name", "Pérez").build());
+                .claim("given_name", "Ana").claim("family_name", "Pérez").claim("email", "ana@gmail.com").build());
         when(jwtDecoder.decode("recepcion")).thenReturn(Jwt.withTokenValue("recepcion").header("alg", "none")
-                .subject("sub-rec").claim("oid", "oid-rec").claim("roles", List.of("Recepcionista")).build());
+                .subject("sub-rec").claim("oid", "oid-rec").claim("roles", List.of("Recepcionista"))
+                .claim("given_name", "Rosa").claim("family_name", "Reyes").build());
     }
 
     @Test
@@ -94,6 +95,7 @@ class AppointmentsControllerTest {
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.pacienteId").value("oid-ana"))
                 .andExpect(jsonPath("$.pacienteNombre").value("Ana Pérez"))
+                .andExpect(jsonPath("$.pacienteCorreo").value("ana@gmail.com"))
                 .andRespond(withSuccess("{\"id\":1}", MediaType.APPLICATION_JSON));
 
         mvc.perform(post("/api/appointments").header("Authorization", "Bearer paciente")
@@ -111,5 +113,49 @@ class AppointmentsControllerTest {
         mvc.perform(put("/api/appointments/5/status").header("Authorization", "Bearer recepcion")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CERRADA\"}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void unPacientePuedeCancelarSuCitaYQuedaRegistradoComoPaciente() throws Exception {
+        ClienteFalso.servidor.expect(requestTo(BASE + "/api/appointments/7/status?pacienteId=oid-ana"))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(jsonPath("$.status").value("CANCELADA"))
+                .andExpect(jsonPath("$.responsable").value("Paciente"))
+                .andRespond(withSuccess("{\"id\":7}", MediaType.APPLICATION_JSON));
+
+        mvc.perform(put("/api/appointments/7/status").header("Authorization", "Bearer paciente")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\",\"responsable\":\"Otro\"}"))
+                .andExpect(status().isOk());
+        ClienteFalso.servidor.verify();
+    }
+
+    @Test
+    void unPacienteNoPuedeAvanzarEstados() throws Exception {
+        mvc.perform(put("/api/appointments/7/status").header("Authorization", "Bearer paciente")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CONFIRMADA\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void laCancelacionDeRecepcionQuedaConSuNombre() throws Exception {
+        ClienteFalso.servidor.expect(requestTo(BASE + "/api/appointments/7/status"))
+                .andExpect(jsonPath("$.responsable").value("Recepción · Rosa Reyes"))
+                .andRespond(withSuccess("{\"id\":7}", MediaType.APPLICATION_JSON));
+
+        mvc.perform(put("/api/appointments/7/status").header("Authorization", "Bearer recepcion")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"CANCELADA\"}"))
+                .andExpect(status().isOk());
+        ClienteFalso.servidor.verify();
+    }
+
+    @Test
+    void reenviaLaConsultaDeDisponibilidad() throws Exception {
+        ClienteFalso.servidor.expect(requestTo(BASE + "/api/appointments/disponibilidad?servicioId=2&fecha=2026-10-20"))
+                .andRespond(withSuccess("[]", MediaType.APPLICATION_JSON));
+
+        mvc.perform(get("/api/appointments/disponibilidad").param("servicioId", "2").param("fecha", "2026-10-20")
+                        .header("Authorization", "Bearer paciente"))
+                .andExpect(status().isOk());
+        ClienteFalso.servidor.verify();
     }
 }

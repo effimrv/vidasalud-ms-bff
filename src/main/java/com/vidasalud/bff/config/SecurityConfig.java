@@ -53,12 +53,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/catalog/**").hasRole("Admin")
                 .requestMatchers(HttpMethod.GET, "/api/catalog/**")
                     .hasAnyRole("Admin", "Recepcionista", "Paciente")
+                // Los pacientes solo pueden cancelar sus propias citas (lo controla AppointmentsController).
                 .requestMatchers(HttpMethod.PUT, "/api/appointments/*/status")
-                    .hasAnyRole("Admin", "Recepcionista")
+                    .hasAnyRole("Admin", "Recepcionista", "Paciente")
                 .requestMatchers("/api/appointments/**")
                     .hasAnyRole("Admin", "Recepcionista", "Paciente")
-                .requestMatchers("/api/report/**").hasRole("Admin")
-                .requestMatchers("/api/audit/**").hasAnyRole("Admin", "Auditor")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth -> oauth
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));

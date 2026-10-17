@@ -32,8 +32,7 @@ public class MeController {
     @GetMapping
     public Map<String, Object> me(Authentication autenticacion) {
         Jwt jwt = (Jwt) autenticacion.getPrincipal();
-        String usuario = primeroNoVacio(jwt.getClaimAsString("preferred_username"),
-                jwt.getClaimAsString("email"), jwt.getClaimAsString("upn"), jwt.getSubject());
+        String usuario = primeroNoVacio(identidad.correo(autenticacion), jwt.getSubject());
         String nombre = primeroNoVacio(jwt.getClaimAsString("name"), usuario);
         List<String> roles = autenticacion.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

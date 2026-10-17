@@ -12,6 +12,8 @@ import java.util.Objects;
 @RequestMapping("/api/info")
 public class InstitutionalInfoController {
 
+    private static final @NonNull MediaType JSON = Objects.requireNonNull(MediaType.APPLICATION_JSON);
+
     private final RestClient client;
 
     public InstitutionalInfoController(@NonNull RestClient catalogClient) {
@@ -26,9 +28,8 @@ public class InstitutionalInfoController {
 
     @PutMapping
     public ResponseEntity<String> actualizar(@RequestBody @NonNull String body) {
-        MediaType jsonType = MediaType.parseMediaType("application/json");
         return client.put().uri("/api/info")
-                .contentType(jsonType)
+                .contentType(JSON)
                 .body(Objects.requireNonNull(body, "body must not be null")).retrieve().toEntity(String.class);
     }
 }

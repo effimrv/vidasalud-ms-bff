@@ -1,5 +1,7 @@
 package com.vidasalud.bff.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,8 @@ import java.util.Objects;
 @RestControllerAdvice
 public class ErroresServiciosHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(ErroresServiciosHandler.class);
+
     private static final @NonNull MediaType JSON = Objects.requireNonNull(MediaType.APPLICATION_JSON);
 
     @ExceptionHandler(RestClientResponseException.class)
@@ -29,6 +33,7 @@ public class ErroresServiciosHandler {
 
     @ExceptionHandler(ResourceAccessException.class)
     public ResponseEntity<String> servicioNoDisponible(ResourceAccessException e) {
+        log.error("Microservicio no disponible: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .contentType(JSON)
                 .body("{\"mensaje\":\"El servicio no está disponible en este momento\"}");
