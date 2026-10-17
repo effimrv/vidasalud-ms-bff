@@ -25,7 +25,11 @@ El BFF utiliza el puerto `8080`.
 | POST | `/api/appointments` | Crea una atención. |
 | PUT | `/api/appointments/{id}/status` | Cambia el estado. |
 | GET | `/api/catalog/services` | Consulta prestaciones. |
-| POST / PUT | `/api/catalog/services` | Administra prestaciones según el rol. |
+| POST | `/api/catalog/services` | Crea una prestación (solo Admin). |
+| PUT | `/api/catalog/services/{id}` | Actualiza una prestación (solo Admin). |
+| GET | `/api/info` | Información institucional (pública). |
+| PUT | `/api/info` | Actualiza la información institucional (solo Admin). |
+| GET | `/api/health` | Estado del servicio (público). |
 
 Las solicitudes `OPTIONS` se permiten sin JWT porque corresponden al preflight de CORS. Las solicitudes reales permanecen protegidas.
 
