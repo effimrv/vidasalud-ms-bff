@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** Verifica el rol por defecto de las cuentas recién registradas y la respuesta de /api/me con claims incompletos. */
-@SuppressWarnings("null")
 @WebMvcTest(MeController.class)
 @Import(SecurityConfig.class)
 class MeControllerTest {
