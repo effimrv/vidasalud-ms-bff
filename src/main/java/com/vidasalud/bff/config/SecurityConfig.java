@@ -29,6 +29,12 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Rol que recibe un usuario autenticado sin roles asignados en Entra ID: quien se registra por su cuenta
+     * (flujo de autoservicio) es un paciente. Admin y Recepcionista se asignan manualmente en Entra ID.
+     */
+    public static final String ROL_POR_DEFECTO = "Paciente";
+
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
@@ -64,10 +70,11 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             Collection<GrantedAuthority> authorities = new ArrayList<>();
             List<String> roles = jwt.getClaimAsStringList("roles");
-            if (roles != null) {
-                for (String role : roles) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-                }
+            if (roles == null || roles.isEmpty()) {
+                roles = List.of(ROL_POR_DEFECTO);
+            }
+            for (String role : roles) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
             }
             JwtGrantedAuthoritiesConverter scopes = new JwtGrantedAuthoritiesConverter();
             authorities.addAll(scopes.convert(jwt));
