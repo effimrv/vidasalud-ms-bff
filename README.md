@@ -35,7 +35,7 @@ Las solicitudes `OPTIONS` se permiten sin JWT porque corresponden al preflight d
 
 ## Configuración y ejecución
 
-Las variables principales son `APPOINTMENTS_URL`, `CATALOG_URL` y `CORS_ORIGINS`. En Docker se pueden utilizar `appointments:8081` y `catalog:8082`.
+Las variables principales son `APPOINTMENTS_URL`, `CATALOG_URL` y `CORS_ORIGINS`. En la nube, `CORS_ORIGINS` debe incluir la URL del frontend desplegado (`https://e7u1iiqh4k.execute-api.us-east-1.amazonaws.com`); si un origen no está en la lista, el BFF responde 403 *Invalid CORS request*. En Docker se pueden utilizar `appointments:8081` y `catalog:8082`.
 
 ```bash
 mvn spring-boot:run
