@@ -2,12 +2,16 @@
 
 Backend for Frontend de VidaSalud. Recibe las solicitudes del frontend, valida los JWT emitidos por Microsoft Entra ID y las enruta hacia los microservicios de atenciones y catálogo.
 
+Matriz de funcionalidades y documentación del proyecto: [vidasalud-docs](https://github.com/effimrv/vidasalud-docs).
+
 ## Responsabilidades
 
 - Validar firma, vigencia, issuer y claims del JWT con Spring Security OAuth2 Resource Server.
-- Autorizar solicitudes según roles como `Admin`, `Recepcionista` y `Paciente`.
+- Autorizar solicitudes según los roles `Admin`, `Recepcionista` y `Paciente`. Una cuenta sin roles (registrada por autoservicio) es `Paciente`.
+- Limitar a cada paciente a sus propias citas: el BFF fija su identificador (`oid`), nombre y correo desde el token al listar, consultar, crear y cancelar, sin importar lo que envíe el frontend.
+- Registrar quién hace cada cambio de estado (paciente, recepción o administración).
 - Exponer una entrada única para el frontend y gestionar CORS.
-- Enrutar solicitudes hacia appointments y catalog.
+- Enrutar solicitudes hacia appointments y catalog, con timeouts (5 s de conexión, 15 s de respuesta) y propagando el código de error real de cada microservicio (503 si no responde).
 
 ## Tecnologías
 
@@ -19,11 +23,12 @@ El BFF utiliza el puerto `8080`.
 
 | Método | Endpoint | Descripción |
 |---|---|---|
-| GET | `/api/me` | Devuelve información del usuario autenticado. |
-| GET | `/api/appointments` | Consulta atenciones. |
-| GET | `/api/appointments/{id}` | Consulta una atención por ID. |
-| POST | `/api/appointments` | Crea una atención. |
-| PUT | `/api/appointments/{id}/status` | Cambia el estado. |
+| GET | `/api/me` | Nombre para mostrar, nombre completo y roles efectivos del usuario. |
+| GET | `/api/appointments` | Atenciones (un paciente recibe solo las suyas). |
+| GET | `/api/appointments/{id}` | Detalle de una atención con su historial (un paciente, solo las suyas). |
+| GET | `/api/appointments/disponibilidad?servicioId=&fecha=` | Horas disponibles de una prestación en un día. |
+| POST | `/api/appointments` | Crea una atención (a nombre del paciente del token). |
+| PUT | `/api/appointments/{id}/status` | Cancela una atención: el personal, cualquiera; un paciente, solo las suyas. |
 | GET | `/api/catalog/services` | Consulta prestaciones. |
 | POST | `/api/catalog/services` | Crea una prestación (solo Admin). |
 | PUT | `/api/catalog/services/{id}` | Actualiza una prestación (solo Admin). |
