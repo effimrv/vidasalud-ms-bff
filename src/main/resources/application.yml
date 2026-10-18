@@ -10,6 +10,12 @@ spring:
         jwt:
           jwk-set-uri: https://login.microsoftonline.com/49cd374a-62d5-4d3d-851e-69058d58e3b5/discovery/v2.0/keys
 
+vidasalud:
+  jwt:
+    # Emisores aceptados (tokens v2.0 y v1.0 del tenant Proyecto1) y audiencias de la API VidaSalud.
+    emisores: https://login.microsoftonline.com/49cd374a-62d5-4d3d-851e-69058d58e3b5/v2.0,https://sts.windows.net/49cd374a-62d5-4d3d-851e-69058d58e3b5/
+    audiencias: 2c70c5bc-6b56-4564-bca4-ec0821f3cefa,api://2c70c5bc-6b56-4564-bca4-ec0821f3cefa
+
 services:
   appointments-url: ${APPOINTMENTS_URL:http://localhost:8081}
   catalog-url: ${CATALOG_URL:http://localhost:8082}

@@ -6,7 +6,7 @@ Matriz de funcionalidades y documentación del proyecto: [vidasalud-docs](https:
 
 ## Responsabilidades
 
-- Validar firma, vigencia, issuer y claims del JWT con Spring Security OAuth2 Resource Server.
+- Validar el JWT con Spring Security OAuth2 Resource Server (`config/ValidacionJwtConfig`): firma con las claves públicas del tenant, vigencia, emisor (`iss` del tenant Proyecto1) y audiencia (`aud` de la API VidaSalud). Un token de otro tenant o de otra aplicación se rechaza con 401.
 - Autorizar solicitudes según los roles `Admin`, `Recepcionista` y `Paciente`. Una cuenta sin roles (registrada por autoservicio) es `Paciente`.
 - Limitar a cada paciente a sus propias citas: el BFF fija su identificador (`oid`), nombre y correo desde el token al listar, consultar, crear y cancelar, sin importar lo que envíe el frontend.
 - Registrar quién hace cada cambio de estado (paciente, recepción o administración).
@@ -40,7 +40,7 @@ Las solicitudes `OPTIONS` se permiten sin JWT porque corresponden al preflight d
 
 ## Configuración y ejecución
 
-Las variables principales son `APPOINTMENTS_URL`, `CATALOG_URL` y `CORS_ORIGINS`. En la nube, `CORS_ORIGINS` debe incluir la URL del frontend desplegado (`https://e7u1iiqh4k.execute-api.us-east-1.amazonaws.com`); si un origen no está en la lista, el BFF responde 403 *Invalid CORS request*. En Docker se pueden utilizar `appointments:8081` y `catalog:8082`.
+Los emisores y audiencias aceptados están en `application.yml` (`vidasalud.jwt`). Las variables principales son `APPOINTMENTS_URL`, `CATALOG_URL` y `CORS_ORIGINS`. En la nube, `CORS_ORIGINS` debe incluir la URL del frontend desplegado (`https://e7u1iiqh4k.execute-api.us-east-1.amazonaws.com`); si un origen no está en la lista, el BFF responde 403 *Invalid CORS request*. En Docker se pueden utilizar `appointments:8081` y `catalog:8082`.
 
 ```bash
 mvn spring-boot:run
