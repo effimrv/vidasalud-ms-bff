@@ -17,7 +17,7 @@ public class IdentidadUsuario {
     public boolean esPersonal(Authentication autenticacion) {
         return autenticacion.getAuthorities().stream()
                 .map(autoridad -> autoridad.getAuthority())
-                .anyMatch(ROLES_PERSONAL::contains);
+                .anyMatch(rol -> ROLES_PERSONAL.contains(rol));
     }
 
     /**
