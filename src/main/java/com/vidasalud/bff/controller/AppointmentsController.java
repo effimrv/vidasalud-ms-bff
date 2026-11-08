@@ -48,7 +48,7 @@ public class AppointmentsController {
         }
         return client.get().uri(b -> {
             b.path("/api/appointments");
-            parametros.forEach((clave, valor) -> b.queryParam(clave, valor));
+            parametros.forEach((clave, valor) -> b.queryParam(clave, Objects.requireNonNull(valor)));
             return b.build();
         }).retrieve().toEntity(String.class);
     }
