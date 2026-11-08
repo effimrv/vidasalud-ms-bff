@@ -19,6 +19,7 @@ vidasalud:
 services:
   appointments-url: ${APPOINTMENTS_URL:http://localhost:8081}
   catalog-url: ${CATALOG_URL:http://localhost:8082}
+  audit-url: ${AUDIT_URL:http://localhost:8085}
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://localhost:4201}

@@ -58,6 +58,9 @@ public class SecurityConfig {
                     .hasAnyRole("Admin", "Recepcionista", "Paciente")
                 .requestMatchers("/api/appointments/**")
                     .hasAnyRole("Admin", "Recepcionista", "Paciente")
+                // Auditoría: solo lectura, para el personal de administración y los auditores.
+                .requestMatchers(HttpMethod.GET, "/api/audit/**")
+                    .hasAnyRole("Admin", "Auditor")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth -> oauth
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));

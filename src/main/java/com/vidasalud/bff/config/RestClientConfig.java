@@ -27,6 +27,11 @@ public class RestClientConfig {
         return cliente(Objects.requireNonNull(url, "services.catalog-url must not be null"));
     }
 
+    @Bean
+    public RestClient auditClient(@Value("${services.audit-url}") @NonNull String url) {
+        return cliente(Objects.requireNonNull(url, "services.audit-url must not be null"));
+    }
+
     private static RestClient cliente(@NonNull String url) {
         SimpleClientHttpRequestFactory fabrica = new SimpleClientHttpRequestFactory();
         fabrica.setConnectTimeout(TIEMPO_CONEXION);
