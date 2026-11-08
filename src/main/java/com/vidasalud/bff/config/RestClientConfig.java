@@ -40,7 +40,7 @@ public class RestClientConfig {
      * Reenvia el token de la peticion entrante a los microservicios: ellos tambien validan el JWT.
      * Si la llamada ya trae su propio Authorization (p. ej. ms-audit), no se sobrescribe.
      */
-    private static final ClientHttpRequestInterceptor REENVIAR_TOKEN = (request, body, execution) -> {
+    private static final @NonNull ClientHttpRequestInterceptor REENVIAR_TOKEN = (request, body, execution) -> {
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)
                 && RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes atributos) {
             String token = atributos.getRequest().getHeader(HttpHeaders.AUTHORIZATION);
